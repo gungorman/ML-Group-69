@@ -111,9 +111,9 @@ def best_lr(alpha_, epochs_):
     #plot(lr_list, lr_mae_list, 'Best Learning Rate Analysis', 'Learning Rate', 'MAE')
 
 def manual_sgd_gridsearch():
-    alpha_list = np.arange(0, 0.2, 0.01)
-    lr_list = np.arange(0.000001, 0.1, 0.001)
-    epochs_list = np.arange(100, 2000, 100)
+    alpha_list = [0.0001, 0.001, 0.01, 0.1]
+    lr_list = [0.001, 0.01, 0.1]
+    epochs_list = [500, 1000, 1500, 2000]
     
     best_mae = float('inf')
     best_combo = None
@@ -139,3 +139,11 @@ print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {b
 print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)}')
 print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
+'''
+-----KNN-----
+For 20 neighbours, the MAE was 0.291327307369742
+The best number of neighbours was 11 with a MAE of 0.2881526216782233
+-----SGD-----
+For an alpha of 0.1, learning rate of 0.001 and 1000 number of epochs, the MAE was 0.2869359981215274
+The best combination was alpha = 0.0001, learning rate = 0.001 and 500 number of epochs with an MAE of 0.2881526216782233
+'''
