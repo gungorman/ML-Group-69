@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.linear_model import SGDRegressor
 from sklearn.metrics import mean_absolute_error
@@ -21,9 +22,22 @@ cleaned_data = data.drop("nationality_name", axis=1)
 X = cleaned_data.drop("log_wages", axis=1).to_numpy()
 y = cleaned_data["log_wages"].to_numpy()
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=randomstate)
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+#X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.5, random_state=randomstate)
+
+def pipeline_standard():
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    return X_train_scaled, X_test_scaled
+
+def pipeline_minmax():
+    scaler = MinMaxScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    return X_train_scaled, X_test_scaled
+
+
+X_train_scaled, X_test_scaled = pipeline_standard()
 
 '''KNN'''
 def knn(neighbours):
@@ -70,7 +84,8 @@ def knn_neighbours():
     index = knn_mae_list.index(best_mae)
     best_num_neighbours = knn_neighbours[index]
     print(f'for {best_num_neighbours} neighbours, MAE of {best_mae}')
-    plot(knn_neighbours, knn_mae_list, 'KNN number of Neighbour Analysis', 'Number of Neighbours', 'MAE')
+    #plot(knn_neighbours, knn_mae_list, 'KNN number of Neighbour Analysis', 'Number of Neighbours', 'MAE')
+    return best_num_neighbours, best_mae
     
 
 def best_alpha(learning_rate_, epochs_):
@@ -95,5 +110,32 @@ def best_lr(alpha_, epochs_):
     print(f'for {epochs_} epochs and alpha: {alpha_}, best learning rate is {best_lr} with MAE of {best_mae}')
     #plot(lr_list, lr_mae_list, 'Best Learning Rate Analysis', 'Learning Rate', 'MAE')
 
+def manual_sgd_gridsearch():
+    alpha_list = np.arange(0, 0.2, 0.01)
+    lr_list = np.arange(0.000001, 0.1, 0.001)
+    epochs_list = np.arange(100, 2000, 100)
+    
+    best_mae = float('inf')
+    best_combo = None
+    
+    # This is manual multi-parameter grid search!
+    for alpha in alpha_list:
+        for lr in lr_list:
+            for epochs in epochs_list:
+                mae = sgd(alpha, lr, epochs)
+                if mae < best_mae:
+                    best_mae = mae
+                    best_combo = (alpha, lr, epochs)
+    
+    return best_combo, best_mae
 
-knn_neighbours()
+best_combo, best_mae = manual_sgd_gridsearch()
+best_num_neighbours, best_mae = knn_neighbours()
+
+'''Testing'''
+print('-----KNN-----')
+print(f'For {hp_nearest_neighbours} neighbours, the MAE was {knn(hp_nearest_neighbours)}')
+print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {best_mae}')
+print('-----SGD-----')
+print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)}')
+print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
