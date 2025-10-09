@@ -69,7 +69,6 @@ def sgd(alpha_, learning_rate_, epochs_):
     return mae_sgd, mae_sgd_list
 
 
-
 '''Plotter'''
 def plot(x, y, title="Scatter", xlabel="X", ylabel="Y"):
     plt.figure(figsize=(10, 6))
@@ -157,18 +156,11 @@ print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {b
 print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
 print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 print('-----Dummy-----')
 print(f"Baseline MAE:", {baseline_model()})
-=======
 
 sgd_per_epoch()
->>>>>>> Stashed changes
-=======
 
-sgd_per_epoch()
->>>>>>> Stashed changes
 # Standardized Pipeline
 '''
 -----KNN-----
