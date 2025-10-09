@@ -143,7 +143,7 @@ best_combo, best_mae = manual_sgd_gridsearch()
 best_num_neighbours, best_mae = knn_neighbours()
 
 def baseline_model():
-    dummy = DummyRegressor(strategy='mean')
+    dummy = DummyRegressor(strategy='median')
     dummy.fit(X_train_scaled, y_train)
     y_pred = dummy.predict(X_test_scaled)
     mae_dummy = mean_absolute_error(y_test, y_pred)
@@ -157,7 +157,7 @@ print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
 #print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
 print('-----Dummy-----')
-print(f"Baseline MAE:", {baseline_model()})
+print(f"Baseline MAE:, {baseline_model()}")
 
 sgd_per_epoch()
 
