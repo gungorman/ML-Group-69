@@ -14,7 +14,7 @@ randomstate = 42
 hp_nearest_neighbours = 20
 hp_alpha = 0.1
 hp_learning_rate = 0.001
-hp_epochs = 1000
+hp_epochs = 200
 randomstate = 42
 
 '''Pre-Processing'''
@@ -65,14 +65,14 @@ def sgd(alpha_, learning_rate_, epochs_):
         sgd.partial_fit(X_train_scaled, y_train)
         y_pred_sgd = sgd.predict(X_test_scaled)
         mae_sgd = mean_absolute_error(y_test, y_pred_sgd)
-        mae_sgd_list.append(mae_sgd_list)
+        mae_sgd_list.append(mae_sgd)
     return mae_sgd, mae_sgd_list
 
 
 '''Plotter'''
-def plot(x, y, title="Scatter", xlabel="X", ylabel="Y"):
+def plot(x, y, title="Line Plot", xlabel="X", ylabel="Y"):
     plt.figure(figsize=(10, 6))
-    plt.scatter(x, y, alpha=0.7)
+    plt.plot(x, y, alpha=0.7)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -136,7 +136,7 @@ def manual_sgd_gridsearch():
     return best_combo, best_mae
 
 def sgd_per_epoch():
-    every = 500
+    every = 1
     epoch_list = range(hp_epochs)
     every_epoch = [epoch_list[i] for i in range(0, len(epoch_list), every)]
     mae_list = sgd(hp_alpha, hp_learning_rate, hp_epochs)[1]
@@ -163,7 +163,7 @@ print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_
 print('-----Dummy-----')
 print(f"Baseline MAE: {baseline_model()}")
 
-#sgd_per_epoch()
+sgd_per_epoch()
 
 # Standardized Pipeline
 '''
