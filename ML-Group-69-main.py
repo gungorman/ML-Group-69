@@ -14,8 +14,7 @@ randomstate = 42
 hp_nearest_neighbours = 20
 hp_alpha = 0.001
 hp_learning_rate = 0.001
-hp_epochs = 2000
-randomstate = 42
+hp_epochs = 50
 
 '''Pre-Processing'''
 data = pd.read_csv('football_wages.csv')
@@ -119,7 +118,7 @@ def best_lr(alpha_, epochs_):
 def manual_sgd_gridsearch():
     alpha_list = [0.0001, 0.001, 0.01, 0.1]
     lr_list = [0.001, 0.01, 0.1]
-    epochs_list = [500, 1000, 1500, 2000]
+    epochs_list = range(1,50)
     
     best_mae = float('inf')
     best_combo = None
