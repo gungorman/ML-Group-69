@@ -136,7 +136,7 @@ def manual_sgd_gridsearch():
     return best_combo, best_mae
 
 def sgd_per_epoch():
-    every = 100
+    every = 500
     epoch_list = range(hp_epochs)
     every_epoch = [epoch_list[i] for i in range(0, len(epoch_list), every)]
     mae_list = sgd(hp_alpha, hp_learning_rate, hp_epochs)[1]
