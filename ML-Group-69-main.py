@@ -14,7 +14,6 @@ hp_nearest_neighbours = 20
 hp_alpha = 0.1
 hp_learning_rate = 0.001
 hp_epochs = 1000
-randomstate = 42
 
 '''Pre-Processing'''
 data = pd.read_csv('football_wages.csv')
@@ -52,16 +51,20 @@ def knn(neighbours):
 def sgd(alpha_, learning_rate_, epochs_):
     sgd = SGDRegressor(
         loss='epsilon_insensitive',
-        alpha=alpha_,      # Regularization
+        alpha=alpha_,
         learning_rate='constant',
-        eta0=learning_rate_,         # Learning rate  
-        max_iter=epochs_,      # Number of epochs
+        eta0=learning_rate_,
+        warm_start=True,  
+        max_iter=1,
         random_state=randomstate
     )
-    sgd.fit(X_train_scaled, y_train)
-    y_pred_sgd = sgd.predict(X_test_scaled)
-    mae_sgd = mean_absolute_error(y_test, y_pred_sgd)
-    return mae_sgd
+    mae_sgd_list = []
+    for _ in range(epochs_):
+        sgd.partial_fit(X_train_scaled, y_train)
+        y_pred_sgd = sgd.predict(X_test_scaled)
+        mae_sgd = mean_absolute_error(y_test, y_pred_sgd)
+        mae_sgd_list.append(mae_sgd_list)
+    return mae_sgd, mae_sgd_list
 
 '''Plotter'''
 def plot(x, y, title="Scatter", xlabel="X", ylabel="Y"):
@@ -122,7 +125,7 @@ def manual_sgd_gridsearch():
     for alpha in alpha_list:
         for lr in lr_list:
             for epochs in epochs_list:
-                mae = sgd(alpha, lr, epochs)
+                mae = sgd(alpha, lr, epochs)[0]
                 if mae < best_mae:
                     best_mae = mae
                     best_combo = (alpha, lr, epochs)
@@ -137,7 +140,7 @@ print('-----KNN-----')
 print(f'For {hp_nearest_neighbours} neighbours, the MAE was {knn(hp_nearest_neighbours)}')
 print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {best_mae}')
 print('-----SGD-----')
-print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)}')
+print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
 print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
 # Standardized Pipeline
 '''
@@ -151,9 +154,9 @@ The best combination was alpha = 0.0001, learning rate = 0.001 and 500 number of
 # Min-Max Normalized Pipeline
 '''
 -----KNN-----
-For 20 neighbours, the MAE was 0.291327307369742
-The best number of neighbours was 11 with a MAE of 0.2881526216782233
+For 20 neighbours, the MAE was 0.2836660790373643
+The best number of neighbours was 15 with a MAE of 0.2811674200063875
 -----SGD-----
 For an alpha of 0.1, learning rate of 0.001 and 1000 number of epochs, the MAE was 0.31809195933829926
-The best combination was alpha = 0.001, learning rate = 0.001 and 500 number of epochs with an MAE of 0.2881526216782233
+The best combination was alpha = 0.001, learning rate = 0.001 and 500 number of epochs with an MAE of 0.2811674200063875
 '''
