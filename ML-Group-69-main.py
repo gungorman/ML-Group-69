@@ -11,41 +11,45 @@ import matplotlib.pyplot as plt
 randomstate = 42
 
 '''Hyperparameters'''
-hp_nearest_neighbours = 20
-hp_alpha = 0.001
+hp_nearest_neighbours = 12
+hp_alpha = 0.01
 hp_learning_rate = 0.001
-hp_epochs = 50
+hp_epochs = 14
 
 '''Pre-Processing'''
 data = pd.read_csv('football_wages.csv')
 cleaned_data = data.drop("nationality_name", axis=1)
 X = cleaned_data.drop("log_wages", axis=1).to_numpy()
 y = cleaned_data["log_wages"].to_numpy()
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=randomstate)
-#X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.5, random_state=randomstate)
+X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.2, random_state=randomstate)
+X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.5, random_state=randomstate)
 
 def pipeline_standard():
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
-    return X_train_scaled, X_test_scaled
+    X_val_scaled = scaler.transform(X_val)
+    return X_train_scaled, X_test_scaled, X_val_scaled
 
 def pipeline_minmax():
     scaler = MinMaxScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
-    return X_train_scaled, X_test_scaled
+    X_val_scaled = scaler.transform(X_val)
+    return X_train_scaled, X_test_scaled, X_val_scaled
 
 
-X_train_scaled, X_test_scaled = pipeline_standard()
+X_train_scaled, X_test_scaled, X_val_scaled= pipeline_standard()
 
 '''KNN'''
 def knn(neighbours):
     knn = KNeighborsRegressor(n_neighbors=neighbours)
     knn.fit(X_train_scaled, y_train)
     y_pred_knn = knn.predict(X_test_scaled)
-    mae_knn = mean_absolute_error(y_test, y_pred_knn)
-    return  mae_knn
+    mae_knn_test = mean_absolute_error(y_test, y_pred_knn)
+    y_pred_val = knn.predict(X_val_scaled)
+    mae_knn_val = mean_absolute_error(y_test, y_pred_val)
+    return  mae_knn_test, mae_knn_val
 
 
 '''SGD'''
@@ -63,9 +67,11 @@ def sgd(alpha_, learning_rate_, epochs_):
     for _ in range(epochs_):
         sgd.partial_fit(X_train_scaled, y_train)
         y_pred_sgd = sgd.predict(X_test_scaled)
-        mae_sgd = mean_absolute_error(y_test, y_pred_sgd)
-        mae_sgd_list.append(mae_sgd)
-    return mae_sgd, mae_sgd_list
+        mae_sgd_test = mean_absolute_error(y_test, y_pred_sgd)
+        mae_sgd_list.append(mae_sgd_test)
+        y_pred_sgd_val = sgd.predict(X_val_scaled)
+        mae_sgd_val = mean_absolute_error(y_val, y_pred_sgd_val)
+    return mae_sgd_test, mae_sgd_list, mae_sgd_val
 
 
 '''Plotter'''
@@ -84,13 +90,13 @@ def knn_neighbours():
     knn_neighbours =[]
     for i in range(1,100):
         knn_neighbours.append(i)
-        knn_mae_list.append(knn(i))
+        knn_mae_list.append(knn(i)[0])
     best_mae = min(knn_mae_list)
     index = knn_mae_list.index(best_mae)
     best_num_neighbours = knn_neighbours[index]
     #print(f'for {best_num_neighbours} neighbours, MAE of {best_mae}')
     #plot(knn_neighbours, knn_mae_list, 'KNN number of Neighbour Analysis', 'Number of Neighbours', 'MAE')
-    return best_num_neighbours, best_mae
+    return best_num_neighbours, best_mae, 
     
 
 def best_alpha(learning_rate_, epochs_):
@@ -152,13 +158,16 @@ def baseline_model():
     mae_dummy = mean_absolute_error(y_test, y_pred)
     return mae_dummy
 
+
 '''Testing'''
 print('-----KNN-----')
-print(f'For {hp_nearest_neighbours} neighbours, the MAE was {knn(hp_nearest_neighbours)}')
+print(f'For {hp_nearest_neighbours} neighbours, the MAE was {knn(hp_nearest_neighbours)[0]}')
 print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {best_mae}')
+print(f'Validation MAE: {knn(best_num_neighbours)[1]}')
 print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
 print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
+print(f'Validation MAE: {sgd(hp_alpha, hp_learning_rate, hp_epochs)[2]}')
 print('-----Dummy-----')
 print(f"Baseline MAE: {baseline_model()}")
 
@@ -167,13 +176,19 @@ sgd_per_epoch()
 # Standardized Pipeline
 '''
 -----KNN-----
-For 20 neighbours, the MAE was 0.28348586427235856
-The best number of neighbours was 14 with a MAE of 0.27914830933977014
+For 20 neighbours, the MAE was 0.28097048485329934
+The best number of neighbours was 12 with a MAE of 0.27658762090821004
+Validation MAE: 0.6221176360422425
 -----SGD-----
-For an alpha of 0.001, learning rate of 0.001 and 2000 number of epochs, the MAE was 0.2819138523905188
-The best combination was alpha = 0.001, learning rate = 0.001 and 2000 number of epochs with an MAE of 0.27914830933977014
+For an alpha of 0.01, learning rate of 0.001 and 30 number of epochs, the MAE was 0.2870978202554313
+The best combination was alpha = 0.01, learning rate = 0.001 and 14 number of epochs with an MAE of 0.27658762090821004
+Validation MAE: 0.29048800747438996
 -----Dummy-----
-Baseline MAE: 0.488083748616423
+Baseline MAE: 0.4944207735534253
+'''
+'''
+VAL
+
 '''
 # Min-Max Normalized Pipeline
 '''
