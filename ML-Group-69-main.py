@@ -136,10 +136,11 @@ def manual_sgd_gridsearch():
     return best_combo, best_mae
 
 def sgd_per_epoch():
-    epoch_list = range(hp_epochs)''
-    every_epoch = [epoch_list[i] for i in range(0, len(epoch_list), 10)]
+    every = 100
+    epoch_list = range(hp_epochs)
+    every_epoch = [epoch_list[i] for i in range(0, len(epoch_list), every)]
     mae_list = sgd(hp_alpha, hp_learning_rate, hp_epochs)[1]
-    every_mae = [mae_list[i] for i in range(0, len(mae_list), 50)]
+    every_mae = [mae_list[i] for i in range(0, len(mae_list), every)]
     plot(every_epoch, every_mae, title="MAE over Epochs", xlabel="Epochs", ylabel="MAE")
 
 #best_combo, best_mae = manual_sgd_gridsearch()
@@ -160,7 +161,7 @@ print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
 #print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
 print('-----Dummy-----')
-print(f"Baseline MAE:", {baseline_model()})
+print(f'Baseline MAE: {baseline_model()}')
 
 sgd_per_epoch()
 
