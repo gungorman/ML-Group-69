@@ -6,6 +6,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.linear_model import SGDRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
+from sklearn.dummy import DummyRegressor
 import matplotlib.pyplot as plt
 randomstate = 42
 
@@ -14,6 +15,7 @@ hp_nearest_neighbours = 20
 hp_alpha = 0.1
 hp_learning_rate = 0.001
 hp_epochs = 1000
+randomstate = 42
 
 '''Pre-Processing'''
 data = pd.read_csv('football_wages.csv')
@@ -36,7 +38,7 @@ def pipeline_minmax():
     return X_train_scaled, X_test_scaled
 
 
-X_train_scaled, X_test_scaled = pipeline_minmax()
+X_train_scaled, X_test_scaled = pipeline_standard()
 
 '''KNN'''
 def knn(neighbours):
@@ -135,6 +137,13 @@ def manual_sgd_gridsearch():
 best_combo, best_mae = manual_sgd_gridsearch()
 best_num_neighbours, best_mae = knn_neighbours()
 
+def baseline_model():
+    dummy = DummyRegressor(strategy='mean')
+    dummy.fit(X_train_scaled, y_train)
+    y_pred = dummy.predict(X_test_scaled)
+    mae_dummy = mean_absolute_error(y_test, y_pred)
+    return mae_dummy
+
 '''Testing'''
 print('-----KNN-----')
 print(f'For {hp_nearest_neighbours} neighbours, the MAE was {knn(hp_nearest_neighbours)}')
@@ -142,6 +151,8 @@ print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {b
 print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
 print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
+print('-----Dummy-----')
+print(f"Baseline MAE:", {baseline_model()})
 # Standardized Pipeline
 '''
 -----KNN-----
@@ -154,9 +165,9 @@ The best combination was alpha = 0.0001, learning rate = 0.001 and 500 number of
 # Min-Max Normalized Pipeline
 '''
 -----KNN-----
-For 20 neighbours, the MAE was 0.2836660790373643
-The best number of neighbours was 15 with a MAE of 0.2811674200063875
+For 20 neighbours, the MAE was 0.291327307369742
+The best number of neighbours was 11 with a MAE of 0.2881526216782233
 -----SGD-----
 For an alpha of 0.1, learning rate of 0.001 and 1000 number of epochs, the MAE was 0.31809195933829926
-The best combination was alpha = 0.001, learning rate = 0.001 and 500 number of epochs with an MAE of 0.2811674200063875
+The best combination was alpha = 0.001, learning rate = 0.001 and 500 number of epochs with an MAE of 0.2881526216782233
 '''
