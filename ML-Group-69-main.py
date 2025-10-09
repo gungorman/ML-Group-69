@@ -12,9 +12,9 @@ randomstate = 42
 
 '''Hyperparameters'''
 hp_nearest_neighbours = 20
-hp_alpha = 0.1
+hp_alpha = 0.001
 hp_learning_rate = 0.001
-hp_epochs = 200
+hp_epochs = 2000
 randomstate = 42
 
 '''Pre-Processing'''
@@ -143,7 +143,7 @@ def sgd_per_epoch():
     every_mae = [mae_list[i] for i in range(0, len(mae_list), every)]
     plot(every_epoch, every_mae, title="MAE over Epochs", xlabel="Epochs", ylabel="MAE")
 
-#best_combo, best_mae = manual_sgd_gridsearch()
+best_combo, best_mae = manual_sgd_gridsearch()
 best_num_neighbours, best_mae = knn_neighbours()
 
 def baseline_model():
@@ -159,7 +159,7 @@ print(f'For {hp_nearest_neighbours} neighbours, the MAE was {knn(hp_nearest_neig
 print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {best_mae}')
 print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
-#print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
+print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
 print('-----Dummy-----')
 print(f"Baseline MAE: {baseline_model()}")
 
@@ -171,8 +171,10 @@ sgd_per_epoch()
 For 20 neighbours, the MAE was 0.28348586427235856
 The best number of neighbours was 14 with a MAE of 0.27914830933977014
 -----SGD-----
-For an alpha of 0.1, learning rate of 0.001 and 1000 number of epochs, the MAE was 0.2869359981215274
-The best combination was alpha = 0.0001, learning rate = 0.001 and 500 number of epochs with an MAE of 0.27914830933977014
+For an alpha of 0.001, learning rate of 0.001 and 2000 number of epochs, the MAE was 0.2819138523905188
+The best combination was alpha = 0.001, learning rate = 0.001 and 2000 number of epochs with an MAE of 0.27914830933977014
+-----Dummy-----
+Baseline MAE: 0.488083748616423
 '''
 # Min-Max Normalized Pipeline
 '''
