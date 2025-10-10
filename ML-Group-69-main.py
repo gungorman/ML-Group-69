@@ -12,7 +12,7 @@ randomstate = 42
 
 '''Hyperparameters'''
 hp_nearest_neighbours = 20
-hp_alpha = 0.1
+hp_alpha = 0.01
 hp_learning_rate = 0.001
 hp_epochs = 30
 
@@ -24,12 +24,16 @@ y = cleaned_data["log_wages"].to_numpy()
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.2, random_state=randomstate)
 X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.5, random_state=randomstate)
 
+autograder_data = pd.read_csv('football_autograder.csv')
+autograder_data_numpy = autograder_data.drop("nationality_name", axis=1).to_numpy()
+
 def pipeline_standard():
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
     X_val_scaled = scaler.transform(X_val)
-    return X_train_scaled, X_test_scaled, X_val_scaled
+    autograder_data_scaled = scaler.transform(autograder_data_numpy)
+    return X_train_scaled, X_test_scaled, X_val_scaled, autograder_data_scaled
 
 def pipeline_minmax():
     scaler = MinMaxScaler()
@@ -39,7 +43,7 @@ def pipeline_minmax():
     return X_train_scaled, X_test_scaled, X_val_scaled
 
 
-X_train_scaled, X_test_scaled, X_val_scaled= pipeline_minmax()
+X_train_scaled, X_test_scaled, X_val_scaled  = pipeline_minmax()
 
 '''KNN'''
 def knn(neighbours):
@@ -71,7 +75,7 @@ def sgd(alpha_, learning_rate_, epochs_):
         mae_sgd_list.append(mae_sgd_test)
         y_pred_sgd_val = sgd.predict(X_val_scaled)
         mae_sgd_val = mean_absolute_error(y_val, y_pred_sgd_val)
-    return mae_sgd_test, mae_sgd_list, mae_sgd_val
+    return mae_sgd_test, mae_sgd_list, mae_sgd_val, sgd
 
 
 '''Plotter'''
@@ -202,4 +206,10 @@ The best combination was alpha = 0.001, learning rate = 0.01 and 44 number of ep
 Validation MAE: 0.2976367991997478
 -----Dummy-----
 Baseline MAE: 0.4944207735534253
+'''
+'''
+estimate_MAE_on_new_data = np.array([0.285])
+prediction = sgd(hp_alpha,hp_learning_rate,hp_epochs)[3].predict(pipeline_standard()[3])
+result = np.append(estimate_MAE_on_new_data, prediction)
+pd.DataFrame(result).to_csv("autograder_submission.txt", index=False, header=False)
 '''
