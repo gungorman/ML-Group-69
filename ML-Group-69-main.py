@@ -175,24 +175,20 @@ sgd_per_epoch()
 
 # Standardized Pipeline
 '''
-TESTING
+Validation (Tuning)
 -----KNN-----
-For 20 neighbours, the MAE was 0.28097048485329934
 The best number of neighbours was 12 with a MAE of 0.27658762090821004
-Validation MAE: 0.6221176360422425
 -----SGD-----
-For an alpha of 0.01, learning rate of 0.001 and 30 number of epochs, the MAE was 0.2870978202554313
 The best combination was alpha = 0.01, learning rate = 0.001 and 14 number of epochs with an MAE of 0.27658762090821004
-Validation MAE: 0.29048800747438996
 -----Dummy-----
 Baseline MAE: 0.4944207735534253
 '''
 '''
-VALIDATION
+Testing (unseen data)
 -----KNN-----
-Validation MAE: 0.6221176360422425
+MAE Performance: 0.6221176360422425
 -----SGD-----
-Validation MAE: 0.2852843911954798
+MAE Performance: 0.2852843911954798
 '''
 # Min-Max Normalized Pipeline
 '''
