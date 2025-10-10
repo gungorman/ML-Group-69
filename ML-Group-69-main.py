@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 randomstate = 42
 
 '''Hyperparameters'''
-hp_nearest_neighbours = 12
+hp_nearest_neighbours = 20
 hp_alpha = 0.01
 hp_learning_rate = 0.001
 hp_epochs = 14
@@ -39,7 +39,7 @@ def pipeline_minmax():
     return X_train_scaled, X_test_scaled, X_val_scaled
 
 
-X_train_scaled, X_test_scaled, X_val_scaled= pipeline_standard()
+X_train_scaled, X_test_scaled, X_val_scaled= pipeline_minmax()
 
 '''KNN'''
 def knn(neighbours):
@@ -175,6 +175,7 @@ sgd_per_epoch()
 
 # Standardized Pipeline
 '''
+TESTING
 -----KNN-----
 For 20 neighbours, the MAE was 0.28097048485329934
 The best number of neighbours was 12 with a MAE of 0.27658762090821004
@@ -187,15 +188,22 @@ Validation MAE: 0.29048800747438996
 Baseline MAE: 0.4944207735534253
 '''
 '''
-VAL
-
+VALIDATION
+-----KNN-----
+Validation MAE: 0.6221176360422425
+-----SGD-----
+Validation MAE: 0.2852843911954798
 '''
 # Min-Max Normalized Pipeline
 '''
 -----KNN-----
-For 20 neighbours, the MAE was 0.291327307369742
-The best number of neighbours was 11 with a MAE of 0.2881526216782233
+For 20 neighbours, the MAE was 0.28224824506751756
+The best number of neighbours was 7 with a MAE of 0.2791065319600642
+Validation MAE: 0.6264637524229393
 -----SGD-----
-For an alpha of 0.1, learning rate of 0.001 and 1000 number of epochs, the MAE was 0.31809195933829926
-The best combination was alpha = 0.001, learning rate = 0.001 and 500 number of epochs with an MAE of 0.2881526216782233
+For an alpha of 0.01, learning rate of 0.001 and 14 number of epochs, the MAE was 0.29134614588974433
+The best combination was alpha = 0.001, learning rate = 0.01 and 44 number of epochs with an MAE of 0.2791065319600642
+Validation MAE: 0.2976367991997478
+-----Dummy-----
+Baseline MAE: 0.4944207735534253
 '''
