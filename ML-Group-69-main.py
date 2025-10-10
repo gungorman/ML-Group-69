@@ -12,9 +12,9 @@ randomstate = 42
 
 '''Hyperparameters'''
 hp_nearest_neighbours = 20
-hp_alpha = 0.01
+hp_alpha = 0.1
 hp_learning_rate = 0.001
-hp_epochs = 14
+hp_epochs = 30
 
 '''Pre-Processing'''
 data = pd.read_csv('football_wages.csv')
@@ -163,7 +163,7 @@ def baseline_model():
 print('-----KNN-----')
 print(f'For {hp_nearest_neighbours} neighbours, the MAE was {knn(hp_nearest_neighbours)[0]}')
 print(f'The best number of neighbours was {best_num_neighbours} with a MAE of {best_mae}')
-print(f'Validation MAE: {knn(best_num_neighbours)[1]}')
+print(f'Validation MAE: {knn(hp_epochs)[1]}')
 print('-----SGD-----')
 print(f'For an alpha of {hp_alpha}, learning rate of {hp_learning_rate} and {hp_epochs} number of epochs, the MAE was {sgd(hp_alpha, hp_learning_rate, hp_epochs)[0]}')
 print(f'The best combination was alpha = {best_combo[0]}, learning rate = {best_combo[1]} and {best_combo[2]} number of epochs with an MAE of {best_mae}')
